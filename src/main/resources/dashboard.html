@@ -77,14 +77,22 @@
     .rail-label { padding: 0 10px 9px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
     .nav-item {
       display: flex;
+      width: 100%;
       min-height: 39px;
       align-items: center;
       gap: 10px;
       border: 1px solid transparent;
       border-radius: 5px;
+      background: transparent;
       padding: 0 10px;
       color: var(--muted);
+      cursor: pointer;
       font-size: 12px;
+      text-align: left;
+    }
+    .nav-item:focus-visible, .button:focus-visible, .watch-item:focus-visible {
+      outline: 2px solid var(--green);
+      outline-offset: 2px;
     }
     .nav-item.active {
       border-color: rgba(99, 230, 149, .14);
@@ -236,6 +244,30 @@
     .signal-status.sell { color: var(--red); }
     .signal-description { max-width: 240px; margin-top: 6px; color: var(--muted); font-size: 10px; }
     .signal-time { margin-top: 8px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .view-panel[hidden] { display: none !important; }
+    .view-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin: 4px 0 15px; }
+    .view-heading h2 { margin: 0; font-size: 15px; font-weight: 600; }
+    .view-heading p { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+    .view-toolbar { display: flex; align-items: end; gap: 10px; }
+    .table-wrap { overflow-x: auto; border-top: 1px solid var(--line); }
+    .data-table { width: 100%; border-collapse: collapse; white-space: nowrap; text-align: left; }
+    .data-table th { height: 35px; border-bottom: 1px solid var(--line); color: var(--dim); font-family: var(--mono); font-size: 9px; font-weight: 400; }
+    .data-table td { height: 48px; border-bottom: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    .data-table tbody tr:hover { background: rgba(255,255,255,.025); }
+    .table-symbol { border: 0; background: none; padding: 0; color: var(--text); cursor: pointer; font-family: var(--mono); font-size: 11px; font-weight: 600; }
+    .table-symbol:hover { color: var(--green); }
+    .table-empty { padding: 22px 8px; color: var(--dim); text-align: center; }
+    .table-filter { min-width: 145px; }
+    .asset-add { display: flex; align-items: end; gap: 8px; }
+    .asset-add .field { width: 175px; }
+    .threshold-input { width: 125px; height: 30px; }
+    .icon-button { width: 30px; height: 30px; border: 1px solid var(--line-strong); border-radius: 4px; color: var(--muted); background: transparent; cursor: pointer; font-family: var(--mono); }
+    .icon-button:hover { border-color: var(--red); color: var(--red); }
+    .asset-table { min-width: 650px; }
+    .asset-notice { margin-top: 12px; color: var(--dim); font-size: 10px; }
+    .alert-list { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+    .trigger-alert { border-left: 2px solid var(--amber); background: rgba(217,189,114,.06); padding: 8px 10px; color: var(--amber); font-size: 10px; }
+    .trigger-alert time { margin-left: 7px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
 
     .message {
       display: none;
@@ -261,10 +293,11 @@
       .field.symbol-field { flex-basis: 220px; }
     }
     @media (max-width: 780px) {
-      .rail { position: static; width: auto; height: 57px; flex-direction: row; align-items: center; border-right: 0; border-bottom: 1px solid var(--line); padding: 0 16px; }
-      .brand { padding: 0; }
+      .rail { position: static; width: auto; min-height: 57px; height: auto; flex-direction: row; flex-wrap: wrap; align-items: center; border-right: 0; border-bottom: 1px solid var(--line); padding: 9px 12px; }
+      .brand { flex: 1 1 100%; padding: 0 3px 7px; }
       .brand-mark { width: 29px; height: 29px; }
-      .rail-label, .nav-item, .rail-bottom { display: none; }
+      .rail-label, .rail-bottom { display: none; }
+      .nav-item { display: flex; width: auto; min-height: 31px; flex: 1 1 auto; justify-content: center; padding: 0 7px; font-size: 10px; }
       .main { margin-left: 0; padding: 0 17px 28px; }
       .topbar { min-height: 49px; }
       .intro { padding: 20px 0 17px; }
@@ -297,6 +330,11 @@
       .signal-content { min-height: 80px; }
       .indicator-frame { height: 100px; }
       .bottomline { flex-direction: column; }
+      .view-heading { align-items: start; flex-direction: column; }
+      .view-toolbar { width: 100%; }
+      .view-toolbar .field { flex: 1; }
+      .asset-add { width: 100%; }
+      .asset-add .field { flex: 1; width: auto; }
     }
     @media (max-width: 390px) {
       .main { padding-right: 12px; padding-left: 12px; }
@@ -316,9 +354,9 @@
         <div><div class="brand-name">C2 FINANCE</div><div class="brand-caption">MARKET OBSERVER</div></div>
       </div>
       <div class="rail-label">ESPAÇO DE TRABALHO</div>
-      <div class="nav-item active"><span class="nav-mark" aria-hidden="true">◫</span>Visão de mercado</div>
-      <div class="nav-item"><span class="nav-mark" aria-hidden="true">⌁</span>Sinais técnicos</div>
-      <div class="nav-item"><span class="nav-mark" aria-hidden="true">≡</span>Ativos monitorados</div>
+      <button class="nav-item active" type="button" data-view="market" aria-current="page"><span class="nav-mark" aria-hidden="true">◫</span>Visão de mercado</button>
+      <button class="nav-item" type="button" data-view="signals"><span class="nav-mark" aria-hidden="true">⌁</span>Sinais técnicos</button>
+      <button class="nav-item" type="button" data-view="assets"><span class="nav-mark" aria-hidden="true">≡</span>Ativos monitorados</button>
       <div class="rail-bottom">
         <div class="feed-label"><span id="sidebarLed" class="feed-led"></span><span id="sidebarConnection">Conectando à Binance</span></div>
         <div class="feed-detail">DADOS PÚBLICOS · SPOT</div>
@@ -327,12 +365,12 @@
 
     <main class="main">
       <div class="topbar">
-        <div class="breadcrumb">MERCADO <span aria-hidden="true">/</span> VISÃO GERAL</div>
+        <div id="breadcrumb" class="breadcrumb">MERCADO <span aria-hidden="true">/</span> VISÃO GERAL</div>
         <div class="topbar-right"><span class="live-pill"><span id="statusLed" class="status-led"></span><span id="connectionText">CONECTANDO</span></span><time id="clock" class="clock">--:--:--</time></div>
       </div>
 
       <header class="intro">
-        <div><div class="eyebrow">TERMINAL DE MERCADO <span aria-hidden="true">·</span> 01</div><h1>Visão de mercado</h1><p>Preços spot e leitura técnica em candles fechados.</p></div>
+        <div><div id="pageEyebrow" class="eyebrow">TERMINAL DE MERCADO <span aria-hidden="true">·</span> 01</div><h1 id="pageTitle">Visão de mercado</h1><p id="pageDescription">Preços spot e leitura técnica em candles fechados.</p></div>
         <div class="intro-meta">FONTE<br>BINANCE SPOT API</div>
       </header>
 
@@ -363,6 +401,7 @@
 
       <div id="errorMessage" class="message" role="alert"></div>
 
+      <div id="view-market" class="view-panel">
       <div class="content-grid">
         <section class="watchlist" aria-label="Lista de ativos">
           <div class="section-head"><h2 class="section-title">Lista de ativos</h2><span id="watchCount" class="section-kicker">03 PARES</span></div>
@@ -390,6 +429,40 @@
           </div>
         </section>
       </div>
+      </div>
+
+      <section id="view-signals" class="view-panel" aria-label="Sinais técnicos" hidden>
+        <div class="view-heading">
+          <div><h2>Sinais por ativo</h2><p>Último cruzamento observado dentro dos candles carregados.</p></div>
+          <div class="view-toolbar">
+            <label class="field"><span class="field-label">FILTRAR SINAL</span><select id="signalFilter" class="select table-filter"><option value="TODOS">Todos</option><option value="COMPRA">Compra</option><option value="VENDA">Venda</option><option value="MANTER">Sem cruzamento</option></select></label>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>ATIVO</th><th>TENDÊNCIA</th><th>ÚLTIMO SINAL</th><th>HORÁRIO</th><th>PREÇO</th><th>SMA CURTA</th><th>SMA LONGA</th></tr></thead>
+            <tbody id="signalRows"><tr><td class="table-empty" colspan="7">Carregando leitura técnica...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-assets" class="view-panel" aria-label="Ativos monitorados" hidden>
+        <div class="view-heading">
+          <div><h2>Lista monitorada</h2><p>Ativos e gatilhos são salvos neste navegador.</p></div>
+          <div class="asset-add">
+            <label class="field"><span class="field-label">ADICIONAR SÍMBOLO</span><input id="newSymbolInput" class="input" placeholder="Ex.: BTCUSDT" maxlength="20" autocomplete="off"></label>
+            <button id="addAssetButton" class="button" type="button">Adicionar</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table asset-table">
+            <thead><tr><th>ATIVO</th><th>PREÇO SPOT</th><th>VARIAÇÃO</th><th>GATILHO DE PREÇO</th><th>ESTADO</th><th></th></tr></thead>
+            <tbody id="assetRows"><tr><td class="table-empty" colspan="6">Carregando ativos...</td></tr></tbody>
+          </table>
+        </div>
+        <p class="asset-notice">Gatilhos são avaliados neste painel durante a atualização automática. Para alertas por e-mail, use o comando monitor com --canal email.</p>
+        <div id="priceAlerts" class="alert-list" aria-live="polite"></div>
+      </section>
 
       <footer class="bottomline"><span><strong>C2 FINANCE</strong> · MONITOR DE MERCADO</span><span>DADOS DE MERCADO PARA FINS INFORMATIVOS</span></footer>
     </main>
@@ -398,7 +471,23 @@
   <script>
     const priceFormat = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 8 });
     const percentFormat = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "always" });
-    const state = { timeframe: "1m", series: [], selected: "BTCUSDT", priceChart: null, spreadChart: null, timer: null, loading: false };
+    const defaultSymbols = ["BTCUSDT", "ETHUSDT", "SOLUSDT"];
+    const readStorage = (key, fallback) => {
+      try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; }
+    };
+    const savedSymbols = readStorage("c2finance.symbols", defaultSymbols);
+    const initialSymbols = Array.isArray(savedSymbols)
+      ? [...new Set(savedSymbols.filter((symbol) => typeof symbol === "string" && /^[A-Za-z0-9]{2,20}$/.test(symbol)).map((symbol) => symbol.toUpperCase()))].slice(0, 8)
+      : defaultSymbols;
+    const savedTriggers = readStorage("c2finance.triggers", {});
+    const initialTriggers = savedTriggers && typeof savedTriggers === "object" && !Array.isArray(savedTriggers)
+      ? Object.fromEntries(Object.entries(savedTriggers).filter(([symbol, value]) => /^[A-Z0-9]{2,20}$/.test(symbol) && Number.isFinite(Number(value)) && Number(value) > 0).map(([symbol, value]) => [symbol, Number(value)]))
+      : {};
+    const state = {
+      timeframe: "1m", series: [], symbols: initialSymbols.length ? initialSymbols : defaultSymbols,
+      selected: initialSymbols[0] || "BTCUSDT", triggers: initialTriggers,
+      belowThreshold: {}, alerts: [], priceChart: null, spreadChart: null, timer: null, loading: false
+    };
     const chartColors = { green: "#63e695", lime: "#c2df77", teal: "#66bca8", grid: "rgba(138,154,142,.12)", text: "#718076", red: "#f17e79" };
 
     const byId = (id) => document.getElementById(id);
@@ -477,7 +566,7 @@
 
     function requestUrl() {
       const params = new URLSearchParams({
-        symbols: byId("symbolsInput").value,
+        symbols: state.symbols.join(","),
         timeframe: state.timeframe,
         short: byId("shortInput").value,
         long: byId("longInput").value
@@ -504,6 +593,9 @@
         clearError();
         renderWatchlist();
         renderSelected();
+        renderSignalRows();
+        evaluatePriceTriggers();
+        renderAssetRows();
       } catch (error) {
         updateConnection(false);
         showError(error.message || "Não foi possível atualizar os dados de mercado.");
@@ -530,6 +622,183 @@
         renderWatchlist();
         renderSelected();
       }));
+    }
+
+    function renderSignalRows() {
+      const tbody = byId("signalRows");
+      const filtro = byId("signalFilter").value;
+      const series = state.series.filter((item) => {
+        const sinal = item.ultimoCruzamento || "MANTER";
+        return filtro === "TODOS" || filtro === sinal;
+      });
+      if (!series.length) {
+        tbody.innerHTML = '<tr><td class="table-empty" colspan="7">Nenhum ativo corresponde ao filtro.</td></tr>';
+        return;
+      }
+      const curta = Number(byId("shortInput").value);
+      const longa = Number(byId("longInput").value);
+      tbody.innerHTML = series.map((item) => {
+        const ponto = item.pontos[item.pontos.length - 1];
+        const sinal = item.ultimoCruzamento || "MANTER";
+        const sinalClass = sinal === "COMPRA" ? "positive" : sinal === "VENDA" ? "negative" : "neutral";
+        const tendenciaClass = item.tendencia === "ALTA" ? "positive" : "negative";
+        return '<tr><td><button class="table-symbol" type="button" data-open-market="' + item.simbolo + '">' + item.simbolo + '</button></td>' +
+          '<td class="' + tendenciaClass + '">' + item.tendencia + '</td>' +
+          '<td class="' + sinalClass + '">' + (sinal === "MANTER" ? "SEM CRUZAMENTO" : sinal) + '</td>' +
+          '<td>' + formatDate(item.dataUltimoCruzamento) + '</td>' +
+          '<td class="watch-price">' + formatPrice(item.precoAtual) + '</td>' +
+          '<td class="watch-price">SMA' + curta + ' · ' + formatPrice(ponto.smaCurta) + '</td>' +
+          '<td class="watch-price">SMA' + longa + ' · ' + formatPrice(ponto.smaLonga) + '</td></tr>';
+      }).join("");
+      tbody.querySelectorAll("[data-open-market]").forEach((button) => button.addEventListener("click", () => {
+        state.selected = button.dataset.openMarket;
+        activateView("market");
+        renderWatchlist();
+        renderSelected();
+      }));
+    }
+
+    function saveSymbols() {
+      byId("symbolsInput").value = state.symbols.join(",");
+      try { localStorage.setItem("c2finance.symbols", JSON.stringify(state.symbols)); } catch { }
+      byId("assetCount").textContent = String(state.symbols.length).padStart(2, "0");
+      byId("watchCount").textContent = String(state.symbols.length).padStart(2, "0") + " PARES";
+    }
+
+    function renderAssetRows() {
+      const tbody = byId("assetRows");
+      if (!state.symbols.length) {
+        tbody.innerHTML = '<tr><td class="table-empty" colspan="6">Nenhum ativo monitorado.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = state.symbols.map((simbolo) => {
+        const item = state.series.find((serie) => serie.simbolo === simbolo);
+        const gatilho = state.triggers[simbolo];
+        const abaixo = gatilho != null && state.belowThreshold[simbolo] === true;
+        const variacao = item ? item.variacaoPercentual : null;
+        const variacaoClass = variacao > 0 ? "positive" : variacao < 0 ? "negative" : "neutral";
+        const estado = !item ? "AGUARDANDO" : abaixo ? "ABAIXO DO GATILHO" : gatilho == null ? "SEM GATILHO" : "ARMADO";
+        const estadoClass = abaixo ? "negative" : gatilho == null ? "neutral" : "positive";
+        return '<tr><td><button class="table-symbol" type="button" data-open-market="' + simbolo + '">' + simbolo + '</button></td>' +
+          '<td class="watch-price">' + formatPrice(item?.precoAtual) + '</td>' +
+          '<td class="' + variacaoClass + '">' + formatPercent(variacao) + '</td>' +
+          '<td><input class="input threshold-input" type="number" min="0" step="any" placeholder="Sem gatilho" aria-label="Gatilho de preço para ' + simbolo + '" data-threshold="' + simbolo + '" value="' + (gatilho ?? "") + '"></td>' +
+          '<td class="' + estadoClass + '">' + estado + '</td>' +
+          '<td><button class="icon-button" type="button" title="Remover ' + simbolo + '" aria-label="Remover ' + simbolo + '" data-remove-symbol="' + simbolo + '">×</button></td></tr>';
+      }).join("");
+      tbody.querySelectorAll("[data-open-market]").forEach((button) => button.addEventListener("click", () => {
+        state.selected = button.dataset.openMarket;
+        activateView("market");
+        renderWatchlist();
+        renderSelected();
+      }));
+      tbody.querySelectorAll("[data-remove-symbol]").forEach((button) => button.addEventListener("click", () => removerAtivo(button.dataset.removeSymbol)));
+      tbody.querySelectorAll("[data-threshold]").forEach((input) => input.addEventListener("change", () => salvarGatilho(input.dataset.threshold, input.value)));
+    }
+
+    function adicionarAtivo() {
+      const input = byId("newSymbolInput");
+      const simbolo = input.value.trim().toUpperCase();
+      if (!/^[A-Z0-9]{2,20}$/.test(simbolo)) {
+        showError("Informe um símbolo válido, como BTCUSDT.");
+        input.focus();
+        return;
+      }
+      if (state.symbols.includes(simbolo)) {
+        showError(simbolo + " já está na lista.");
+        input.focus();
+        return;
+      }
+      if (state.symbols.length >= 8) {
+        showError("O painel aceita até 8 ativos monitorados.");
+        return;
+      }
+      state.symbols.push(simbolo);
+      state.selected = simbolo;
+      input.value = "";
+      clearError();
+      saveSymbols();
+      refreshData();
+    }
+
+    function removerAtivo(simbolo) {
+      if (state.symbols.length <= 1) {
+        showError("Mantenha ao menos um ativo monitorado.");
+        return;
+      }
+      state.symbols = state.symbols.filter((item) => item !== simbolo);
+      delete state.triggers[simbolo];
+      delete state.belowThreshold[simbolo];
+      if (state.selected === simbolo) state.selected = state.symbols[0];
+      clearError();
+      saveSymbols();
+      try { localStorage.setItem("c2finance.triggers", JSON.stringify(state.triggers)); } catch { }
+      renderAssetRows();
+      refreshData();
+    }
+
+    function salvarGatilho(simbolo, texto) {
+      const valor = texto.trim() === "" ? null : Number(texto);
+      if (valor != null && (!Number.isFinite(valor) || valor <= 0)) {
+        showError("O gatilho precisa ser um preço maior que zero.");
+        renderAssetRows();
+        return;
+      }
+      if (valor == null) delete state.triggers[simbolo];
+      else state.triggers[simbolo] = valor;
+      delete state.belowThreshold[simbolo];
+      clearError();
+      try { localStorage.setItem("c2finance.triggers", JSON.stringify(state.triggers)); } catch { }
+      evaluatePriceTriggers();
+      renderAssetRows();
+    }
+
+    function evaluatePriceTriggers() {
+      for (const simbolo of state.symbols) {
+        const gatilho = state.triggers[simbolo];
+        const item = state.series.find((serie) => serie.simbolo === simbolo);
+        if (gatilho == null || !item) continue;
+        const abaixo = item.precoAtual <= gatilho;
+        const estavaAbaixo = state.belowThreshold[simbolo] === true;
+        if (abaixo && !estavaAbaixo) {
+          state.alerts.unshift({ simbolo, preco: item.precoAtual, gatilho, horario: new Date().toISOString() });
+          state.alerts = state.alerts.slice(0, 8);
+        }
+        state.belowThreshold[simbolo] = abaixo;
+      }
+      renderPriceAlerts();
+    }
+
+    function renderPriceAlerts() {
+      const container = byId("priceAlerts");
+      container.innerHTML = state.alerts.map((alerta) =>
+        '<div class="trigger-alert">' + alerta.simbolo + ' abaixo de ' + formatPrice(alerta.gatilho)
+          + ' · atual ' + formatPrice(alerta.preco)
+          + '<time>' + formatDate(alerta.horario) + '</time></div>').join("");
+    }
+
+    function activateView(view) {
+      const paginas = {
+        market: ["Visão de mercado", "MERCADO / VISÃO GERAL", "Preços spot e leitura técnica em candles fechados."],
+        signals: ["Sinais técnicos", "MERCADO / SINAIS TÉCNICOS", "Cruzamentos calculados a partir dos candles fechados carregados."],
+        assets: ["Ativos monitorados", "MERCADO / ATIVOS MONITORADOS", "Gerencie os pares e seus gatilhos de preço locais."]
+      };
+      const pagina = paginas[view] || paginas.market;
+      document.querySelectorAll("[data-view]").forEach((button) => {
+        const ativo = button.dataset.view === view;
+        button.classList.toggle("active", ativo);
+        if (ativo) button.setAttribute("aria-current", "page");
+        else button.removeAttribute("aria-current");
+      });
+      document.querySelectorAll(".view-panel").forEach((panel) => {
+        panel.hidden = panel.id !== "view-" + view;
+      });
+      byId("pageTitle").textContent = pagina[0];
+      byId("breadcrumb").innerHTML = "MERCADO <span aria-hidden=\"true\">/</span> " + pagina[1].split(" / ")[1];
+      byId("pageDescription").textContent = pagina[2];
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (view === "signals") renderSignalRows();
+      if (view === "assets") renderAssetRows();
     }
 
     function renderSelected() {
@@ -578,7 +847,13 @@
         showError("Os períodos precisam respeitar: 0 < SMA curta < SMA longa < 200.");
         return;
       }
-      state.selected = symbols[0].toUpperCase();
+      state.symbols = [...new Set(symbols.map((symbol) => symbol.toUpperCase()))];
+      if (state.symbols.length > 8) {
+        showError("O painel aceita até 8 ativos monitorados.");
+        return;
+      }
+      state.selected = state.symbols[0];
+      saveSymbols();
       refreshData();
       setRefreshTimer();
     }
@@ -596,10 +871,17 @@
       state.timeframe = button.dataset.timeframe;
       refreshData();
     }));
+    document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => activateView(button.dataset.view)));
     byId("applyButton").addEventListener("click", applyControls);
     byId("refreshButton").addEventListener("click", refreshData);
     byId("refreshSelect").addEventListener("change", setRefreshTimer);
+    byId("signalFilter").addEventListener("change", renderSignalRows);
+    byId("addAssetButton").addEventListener("click", adicionarAtivo);
+    byId("newSymbolInput").addEventListener("keydown", (event) => { if (event.key === "Enter") adicionarAtivo(); });
     byId("symbolsInput").addEventListener("keydown", (event) => { if (event.key === "Enter") applyControls(); });
+    byId("symbolsInput").value = state.symbols.join(",");
+    byId("assetCount").textContent = String(state.symbols.length).padStart(2, "0");
+    byId("watchCount").textContent = String(state.symbols.length).padStart(2, "0") + " PARES";
     byId("clock").textContent = new Date().toLocaleTimeString("pt-BR");
     setInterval(() => { byId("clock").textContent = new Date().toLocaleTimeString("pt-BR"); }, 1000);
     createCharts();

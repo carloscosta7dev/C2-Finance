@@ -77,7 +77,15 @@ O canal padrão é `console`. Para enviar os sinais técnicos e alertas de preç
 java -jar target/scanner-financeiro.jar dashboard --porta 8765
 ```
 
-Abra `http://127.0.0.1:8765`. O painel é servido apenas no loopback local, consulta a Binance pelo processo Java e mostra a lista de ativos, preço, variação do intervalo, candles fechados, SMA curta/longa, distância entre médias e último cruzamento. Símbolos, timeframe, períodos SMA e frequência de atualização são configuráveis na tela. O gráfico usa Chart.js e fontes carregadas por CDN; o navegador precisa de internet para esses recursos e o processo Java precisa de acesso à Binance.
+Abra `http://127.0.0.1:8765`. O painel é servido apenas no loopback local e consulta a Binance pelo processo Java. A navegação inclui:
+
+- **Visão de mercado**: lista de preços, variação no período e gráficos de candles fechados, SMA curta/longa e distância entre as médias.
+- **Sinais técnicos**: tabela de tendência, último cruzamento, horário, preço e valores das SMAs; permite filtrar compra, venda ou ausência de cruzamento.
+- **Ativos monitorados**: adicionar/remover até oito símbolos, configurar gatilhos de preço e ver os alertas. A lista e os gatilhos ficam salvos no `localStorage` deste navegador; os avisos de gatilho aparecem no painel enquanto ele estiver aberto. Para alertas por e-mail, use o comando `monitor --canal email`.
+
+Símbolos, timeframe, períodos SMA e frequência de atualização são configuráveis. O gráfico usa Chart.js e fontes carregadas por CDN; o navegador precisa de internet para esses recursos e o processo Java precisa de acesso à Binance.
+
+No VS Code, executar `Main` sem argumentos inicia o dashboard e tenta abrir o navegador automaticamente. Se a porta `8765` estiver ocupada, o sistema seleciona outra porta livre e imprime o endereço correspondente. Use `--help` para exibir a lista de comandos.
 
 ### Backtest
 
@@ -123,7 +131,7 @@ Ele verifica delimitadores, literais, nomes de tipos públicos e correspondênci
 mvn test
 ```
 
-Os testes cobrem os cálculos técnicos, o retry, respostas HTTP locais e limite de concorrência, conversão e falha isolada por símbolo, alertas, leitura CSV, backtesting e as rotas locais do dashboard. A última execução passou com 41 testes, sem falhas ou erros. `mvn clean package` também concluiu sem erros; o verificador estrutural encontrou 0 problemas nos 21 arquivos Java.
+Os testes cobrem os cálculos técnicos, o retry, respostas HTTP locais e limite de concorrência, conversão e falha isolada por símbolo, alertas, leitura CSV, backtesting e as rotas locais do dashboard. A última execução passou com 42 testes, sem falhas ou erros. `mvn clean package` também concluiu sem erros; o verificador estrutural encontrou 0 problemas nos 21 arquivos Java.
 
 ## Status de prontidão
 

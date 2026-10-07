@@ -14,8 +14,11 @@ import com.scanner.financeiro.motor.MetodoHttp;
 import com.scanner.financeiro.motor.MotorRequisicoes;
 import com.scanner.financeiro.motor.ResultadoRequisicao;
 
+import java.awt.Desktop;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.BindException;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -40,16 +43,12 @@ public final class Main {
     private Main() {}
 
     public static void main(String[] args) {
-        if (args.length == 0) {
-            imprimirUso();
-            return;
-        }
-
-        String comando = args[0];
-        String[] resto = Arrays.copyOfRange(args, 1, args.length);
+        String comando = args.length == 0 ? "dashboard" : args[0];
+        String[] resto = args.length == 0 ? new String[0] : Arrays.copyOfRange(args, 1, args.length);
 
         try {
             switch (comando) {
+                case "help", "--help" -> imprimirUso();
                 case "loadtest" -> executarLoadTest(resto);
                 case "monitor" -> executarMonitor(resto);
                 case "backtest" -> executarBacktest(resto);
@@ -185,15 +184,42 @@ public final class Main {
         int porta = Integer.parseInt(opcoes.getOrDefault("porta", "8765"));
 
         try (MotorRequisicoes motor = new MotorRequisicoes(10, Duration.ofSeconds(10));
-             DashboardServer dashboard = new DashboardServer(porta, new BinanceClient(motor))) {
+               DashboardServer dashboard = criarDashboard(porta, new BinanceClient(motor))) {
             dashboard.iniciar();
-            System.out.println("Dashboard disponível em http://127.0.0.1:" + dashboard.porta());
+            String endereco = "http://127.0.0.1:" + dashboard.porta();
+            System.out.println("Dashboard disponível em " + endereco);
             System.out.println("Pressione Ctrl+C para encerrar.");
+            abrirNoNavegador(endereco);
             try {
                 Thread.currentThread().join();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
+        }
+    }
+
+    static DashboardServer criarDashboard(int porta, BinanceClient cliente) throws IOException {
+        try {
+            return new DashboardServer(porta, cliente);
+        } catch (BindException e) {
+            if (porta == 0) {
+                throw e;
+            }
+            System.err.println("Porta " + porta + " ocupada; selecionando uma porta livre.");
+            return new DashboardServer(0, cliente);
+        }
+    }
+
+    private static void abrirNoNavegador(String endereco) {
+        if (!Desktop.isDesktopSupported()) {
+            return;
+        }
+        try {
+            if (Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(URI.create(endereco));
+            }
+        } catch (IOException | UnsupportedOperationException | SecurityException e) {
+            System.err.println("Não foi possível abrir o navegador automaticamente: " + e.getMessage());
         }
     }
 
