@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Mercado | C2 Finance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b09;
+      --surface: #0d120f;
+      --surface-raised: #121a15;
+      --line: #202c24;
+      --line-strong: #2c3a30;
+      --text: #e7eee8;
+      --muted: #8a9a8e;
+      --dim: #5d6b61;
+      --green: #63e695;
+      --green-soft: #a9efbd;
+      --lime: #c2df77;
+      --teal: #66bca8;
+      --red: #f17e79;
+      --amber: #d9bd72;
+      --font: "DM Sans", "Segoe UI", sans-serif;
+      --mono: "IBM Plex Mono", Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--text);
+      background-color: var(--bg);
+      background-image: linear-gradient(rgba(102, 188, 130, .025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 188, 130, .025) 1px, transparent 1px);
+      background-size: 36px 36px;
+      font-family: var(--font);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    .shell { min-height: 100vh; }
+    .rail {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 5;
+      display: flex;
+      width: 222px;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      background: rgba(9, 13, 10, .97);
+      padding: 24px 15px 18px;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 9px 31px; }
+    .brand-mark {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      place-items: center;
+      border: 1px solid rgba(99, 230, 149, .35);
+      border-radius: 7px;
+      color: var(--green);
+      background: rgba(99, 230, 149, .08);
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .brand-name { color: var(--text); font-size: 13px; font-weight: 700; letter-spacing: 0; }
+    .brand-caption { margin-top: 1px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .rail-label { padding: 0 10px 9px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .nav-item {
+      display: flex;
+      min-height: 39px;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      padding: 0 10px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .nav-item.active {
+      border-color: rgba(99, 230, 149, .14);
+      color: var(--green-soft);
+      background: rgba(99, 230, 149, .07);
+    }
+    .nav-mark { width: 15px; color: inherit; text-align: center; font-family: var(--mono); }
+    .rail-bottom { margin-top: auto; border-top: 1px solid var(--line); padding: 15px 9px 0; }
+    .feed-label { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; }
+    .feed-led, .status-led { width: 7px; height: 7px; flex: 0 0 7px; border-radius: 50%; background: var(--dim); }
+    .feed-led.connected, .status-led.connected { background: var(--green); box-shadow: 0 0 10px rgba(99, 230, 149, .6); }
+    .feed-detail { margin: 7px 0 0 15px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
+
+    .main { max-width: 1640px; margin-left: 222px; padding: 0 35px 40px; }
+    .topbar {
+      display: flex;
+      min-height: 62px;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .breadcrumb { color: var(--dim); font-family: var(--mono); font-size: 10px; }
+    .topbar-right { display: flex; align-items: center; gap: 18px; color: var(--muted); font-size: 11px; }
+    .live-pill { display: inline-flex; align-items: center; gap: 7px; color: var(--green-soft); font-family: var(--mono); font-size: 10px; }
+    .clock { color: var(--muted); font-family: var(--mono); font-size: 10px; }
+    .intro { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 27px 0 22px; }
+    .eyebrow { color: var(--green); font-family: var(--mono); font-size: 9px; }
+    h1 { margin: 5px 0 3px; font-size: 24px; font-weight: 600; line-height: 1.2; }
+    .intro p { margin: 0; color: var(--muted); font-size: 12px; }
+    .intro-meta { color: var(--dim); font-family: var(--mono); font-size: 10px; text-align: right; }
+
+    .summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 6px; background: rgba(13, 18, 15, .9); }
+    .summary-item { min-height: 75px; padding: 14px 17px 12px; }
+    .summary-item + .summary-item { border-left: 1px solid var(--line); }
+    .summary-label { color: var(--muted); font-size: 10px; }
+    .summary-value { margin-top: 7px; color: var(--text); font-family: var(--mono); font-size: 15px; font-weight: 500; }
+    .summary-value.accent { color: var(--green); }
+    .summary-note { margin-top: 2px; color: var(--dim); font-size: 9px; }
+
+    .controls { margin-top: 17px; border-bottom: 1px solid var(--line); padding: 0 0 16px; }
+    .control-row { display: flex; align-items: end; gap: 13px; }
+    .field { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+    .field.symbol-field { flex: 1 1 260px; }
+    .field.period-field { width: 90px; }
+    .field.refresh-field { width: 120px; }
+    .field-label { color: var(--muted); font-size: 10px; }
+    .input, .select {
+      width: 100%;
+      height: 34px;
+      border: 1px solid var(--line-strong);
+      border-radius: 4px;
+      outline: 0;
+      color: var(--text);
+      background: #0b100d;
+      padding: 0 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+    .input:focus, .select:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(99, 230, 149, .1); }
+    .timeframe-group { display: flex; height: 34px; border: 1px solid var(--line-strong); border-radius: 4px; background: #0b100d; padding: 2px; }
+    .timeframe {
+      min-width: 39px;
+      border: 0;
+      border-radius: 3px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 10px;
+    }
+    .timeframe:hover { color: var(--text); }
+    .timeframe.selected { color: #07100a; background: var(--green); font-weight: 600; }
+    .button {
+      height: 34px;
+      border: 1px solid rgba(99, 230, 149, .35);
+      border-radius: 4px;
+      color: #08110b;
+      background: var(--green);
+      padding: 0 13px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .button:hover { background: #8af0ad; }
+    .button:disabled { cursor: wait; opacity: .65; }
+    .button.secondary { color: var(--green-soft); background: transparent; }
+    .button.secondary:hover { background: rgba(99, 230, 149, .08); }
+    .control-actions { display: flex; gap: 7px; }
+
+    .content-grid { display: grid; grid-template-columns: 236px minmax(0, 1fr); gap: 18px; margin-top: 20px; }
+    .section-head { display: flex; min-height: 38px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .section-title { margin: 0; color: var(--text); font-size: 12px; font-weight: 600; }
+    .section-kicker { color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .watchlist { min-width: 0; }
+    .watch-items { display: flex; flex-direction: column; }
+    .watch-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 5px 8px;
+      min-height: 61px;
+      align-items: center;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      border-left: 2px solid transparent;
+      background: transparent;
+      padding: 8px 7px 8px 9px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .watch-item:hover { background: rgba(255,255,255,.025); }
+    .watch-item.active { border-left-color: var(--green); background: rgba(99, 230, 149, .055); }
+    .watch-symbol { color: var(--text); font-family: var(--mono); font-size: 11px; font-weight: 600; }
+    .watch-market { color: var(--dim); font-size: 9px; }
+    .watch-price { color: var(--text); font-family: var(--mono); font-size: 10px; text-align: right; }
+    .watch-change { font-family: var(--mono); font-size: 9px; text-align: right; }
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .neutral { color: var(--muted); }
+    .watch-empty { padding: 17px 8px; color: var(--dim); font-size: 11px; }
+
+    .charts { min-width: 0; }
+    .asset-head { display: flex; min-height: 62px; align-items: center; justify-content: space-between; gap: 15px; border-bottom: 1px solid var(--line); }
+    .asset-identity { display: flex; align-items: center; gap: 11px; }
+    .asset-token { display: grid; width: 31px; height: 31px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; color: var(--green); background: var(--surface-raised); font-family: var(--mono); font-size: 10px; }
+    .asset-name { color: var(--text); font-family: var(--mono); font-size: 13px; font-weight: 600; }
+    .asset-sub { margin-top: 1px; color: var(--dim); font-size: 9px; }
+    .asset-price-block { display: flex; align-items: baseline; gap: 12px; }
+    .asset-price { color: var(--text); font-family: var(--mono); font-size: 21px; font-weight: 500; }
+    .asset-change { font-family: var(--mono); font-size: 10px; }
+    .chart-key { display: flex; align-items: center; gap: 14px; color: var(--muted); font-size: 9px; }
+    .key-item { display: inline-flex; align-items: center; gap: 5px; }
+    .key-line { width: 12px; height: 2px; background: var(--green); }
+    .key-line.short { background: var(--lime); }
+    .key-line.long { background: var(--teal); }
+    .chart-frame { position: relative; height: 326px; padding: 15px 5px 4px 0; }
+    .chart-frame canvas { width: 100% !important; height: 100% !important; }
+    .chart-footer { display: flex; min-height: 34px; align-items: center; justify-content: space-between; border-top: 1px solid var(--line); color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .lower-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, .55fr); gap: 18px; margin-top: 19px; }
+    .indicator-head { display: flex; height: 34px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .indicator-head .section-title { font-size: 11px; }
+    .indicator-frame { position: relative; height: 115px; padding: 12px 4px 0 0; }
+    .indicator-frame canvas { width: 100% !important; height: 100% !important; }
+    .signal-panel { border-left: 1px solid var(--line); padding-left: 17px; }
+    .signal-content { display: flex; min-height: 115px; flex-direction: column; justify-content: center; }
+    .signal-label { color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .signal-status { margin-top: 7px; color: var(--muted); font-family: var(--mono); font-size: 16px; font-weight: 500; }
+    .signal-status.buy { color: var(--green); }
+    .signal-status.sell { color: var(--red); }
+    .signal-description { max-width: 240px; margin-top: 6px; color: var(--muted); font-size: 10px; }
+    .signal-time { margin-top: 8px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
+
+    .message {
+      display: none;
+      margin-top: 14px;
+      border: 1px solid rgba(241, 126, 121, .35);
+      border-radius: 4px;
+      color: #ffb3ad;
+      background: rgba(241, 126, 121, .07);
+      padding: 10px 12px;
+      font-size: 11px;
+    }
+    .message.visible { display: block; }
+    .bottomline { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; border-top: 1px solid var(--line); padding-top: 12px; color: var(--dim); font-family: var(--mono); font-size: 9px; }
+    .bottomline strong { color: var(--muted); font-weight: 500; }
+    .loading { animation: pulse 1.2s ease-in-out infinite alternate; }
+    @keyframes pulse { from { opacity: .45; } to { opacity: .95; } }
+
+    @media (max-width: 1100px) {
+      .rail { width: 190px; }
+      .main { margin-left: 190px; padding-right: 24px; padding-left: 24px; }
+      .content-grid { grid-template-columns: 205px minmax(0, 1fr); }
+      .control-row { flex-wrap: wrap; }
+      .field.symbol-field { flex-basis: 220px; }
+    }
+    @media (max-width: 780px) {
+      .rail { position: static; width: auto; height: 57px; flex-direction: row; align-items: center; border-right: 0; border-bottom: 1px solid var(--line); padding: 0 16px; }
+      .brand { padding: 0; }
+      .brand-mark { width: 29px; height: 29px; }
+      .rail-label, .nav-item, .rail-bottom { display: none; }
+      .main { margin-left: 0; padding: 0 17px 28px; }
+      .topbar { min-height: 49px; }
+      .intro { padding: 20px 0 17px; }
+      h1 { font-size: 21px; }
+      .summary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .summary-item { min-height: 64px; padding: 10px 12px; }
+      .summary-item:nth-child(3) { border-left: 0; border-top: 1px solid var(--line); }
+      .summary-item:nth-child(4) { border-top: 1px solid var(--line); }
+      .summary-value { margin-top: 4px; font-size: 13px; }
+      .controls { overflow: hidden; }
+      .control-row { align-items: end; gap: 9px; }
+      .field.symbol-field { flex: 1 1 100%; }
+      .field.period-field { flex: 1 1 55px; width: auto; }
+      .field.refresh-field { flex: 1 1 90px; width: auto; }
+      .timeframe-field { order: 2; width: 100%; }
+      .timeframe-group { width: 100%; }
+      .timeframe { flex: 1; }
+      .control-actions { flex: 0 0 auto; }
+      .content-grid { grid-template-columns: 1fr; gap: 12px; margin-top: 12px; }
+      .watchlist { order: 2; }
+      .watch-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .watch-item { border-right: 1px solid var(--line); }
+      .charts { order: 1; }
+      .asset-head { min-height: 58px; }
+      .asset-price { font-size: 17px; }
+      .asset-price-block { gap: 6px; flex-direction: column; align-items: end; }
+      .chart-frame { height: 263px; padding-top: 12px; }
+      .lower-grid { grid-template-columns: 1fr; gap: 12px; margin-top: 14px; }
+      .signal-panel { border-top: 1px solid var(--line); border-left: 0; padding: 12px 0 0; }
+      .signal-content { min-height: 80px; }
+      .indicator-frame { height: 100px; }
+      .bottomline { flex-direction: column; }
+    }
+    @media (max-width: 390px) {
+      .main { padding-right: 12px; padding-left: 12px; }
+      .topbar-right { gap: 8px; }
+      .clock { display: none; }
+      .chart-key { gap: 8px; font-size: 8px; }
+      .key-item { gap: 3px; }
+      .key-line { width: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="rail" aria-label="Navegação principal">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">V.</div>
+        <div><div class="brand-name">C2 FINANCE</div><div class="brand-caption">MARKET OBSERVER</div></div>
+      </div>
+      <div class="rail-label">ESPAÇO DE TRABALHO</div>
+      <div class="nav-item active"><span class="nav-mark" aria-hidden="true">◫</span>Visão de mercado</div>
+      <div class="nav-item"><span class="nav-mark" aria-hidden="true">⌁</span>Sinais técnicos</div>
+      <div class="nav-item"><span class="nav-mark" aria-hidden="true">≡</span>Ativos monitorados</div>
+      <div class="rail-bottom">
+        <div class="feed-label"><span id="sidebarLed" class="feed-led"></span><span id="sidebarConnection">Conectando à Binance</span></div>
+        <div class="feed-detail">DADOS PÚBLICOS · SPOT</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div class="breadcrumb">MERCADO <span aria-hidden="true">/</span> VISÃO GERAL</div>
+        <div class="topbar-right"><span class="live-pill"><span id="statusLed" class="status-led"></span><span id="connectionText">CONECTANDO</span></span><time id="clock" class="clock">--:--:--</time></div>
+      </div>
+
+      <header class="intro">
+        <div><div class="eyebrow">TERMINAL DE MERCADO <span aria-hidden="true">·</span> 01</div><h1>Visão de mercado</h1><p>Preços spot e leitura técnica em candles fechados.</p></div>
+        <div class="intro-meta">FONTE<br>BINANCE SPOT API</div>
+      </header>
+
+      <section class="summary" aria-label="Resumo do monitor">
+        <div class="summary-item"><div class="summary-label">ATIVOS NA LISTA</div><div id="assetCount" class="summary-value">03</div><div class="summary-note">pares spot</div></div>
+        <div class="summary-item"><div class="summary-label">TIMEFRAME</div><div id="summaryTimeframe" class="summary-value">1m</div><div class="summary-note">vela confirmada</div></div>
+        <div class="summary-item"><div class="summary-label">MÉDIAS MÓVEIS</div><div id="summaryAverages" class="summary-value">SMA 9 / 21</div><div class="summary-note">fechamentos</div></div>
+        <div class="summary-item"><div class="summary-label">ÚLTIMA SINCRONIZAÇÃO</div><div id="updatedAt" class="summary-value accent">AGUARDANDO</div><div class="summary-note">atualização automática ativa</div></div>
+      </section>
+
+      <section class="controls" aria-label="Controles do gráfico">
+        <div class="control-row">
+          <label class="field symbol-field"><span class="field-label">SÍMBOLOS</span><input id="symbolsInput" class="input" value="BTCUSDT,ETHUSDT,SOLUSDT" autocomplete="off" aria-label="Símbolos Binance separados por vírgula"></label>
+          <div class="field timeframe-field"><span class="field-label">TIMEFRAME</span><div class="timeframe-group" role="group" aria-label="Timeframe">
+            <button class="timeframe selected" type="button" data-timeframe="1m" aria-pressed="true">1m</button>
+            <button class="timeframe" type="button" data-timeframe="5m" aria-pressed="false">5m</button>
+            <button class="timeframe" type="button" data-timeframe="15m" aria-pressed="false">15m</button>
+            <button class="timeframe" type="button" data-timeframe="1h" aria-pressed="false">1h</button>
+            <button class="timeframe" type="button" data-timeframe="4h" aria-pressed="false">4h</button>
+            <button class="timeframe" type="button" data-timeframe="1d" aria-pressed="false">1d</button>
+          </div></div>
+          <label class="field period-field"><span class="field-label">SMA CURTA</span><input id="shortInput" class="input" type="number" min="1" max="197" value="9" aria-label="Período da SMA curta"></label>
+          <label class="field period-field"><span class="field-label">SMA LONGA</span><input id="longInput" class="input" type="number" min="2" max="198" value="21" aria-label="Período da SMA longa"></label>
+          <label class="field refresh-field"><span class="field-label">ATUALIZAR</span><select id="refreshSelect" class="select" aria-label="Intervalo de atualização"><option value="15">15 segundos</option><option value="30" selected>30 segundos</option><option value="60">1 minuto</option></select></label>
+          <div class="control-actions"><button id="applyButton" class="button" type="button">Aplicar</button><button id="refreshButton" class="button secondary" type="button" title="Atualizar agora">Atualizar</button></div>
+        </div>
+      </section>
+
+      <div id="errorMessage" class="message" role="alert"></div>
+
+      <div class="content-grid">
+        <section class="watchlist" aria-label="Lista de ativos">
+          <div class="section-head"><h2 class="section-title">Lista de ativos</h2><span id="watchCount" class="section-kicker">03 PARES</span></div>
+          <div id="watchItems" class="watch-items"><div class="watch-empty loading">Carregando dados de mercado...</div></div>
+        </section>
+
+        <section class="charts" aria-label="Gráficos e sinal técnico">
+          <div class="asset-head">
+            <div class="asset-identity"><div id="assetToken" class="asset-token">BTC</div><div><div id="assetName" class="asset-name">BTCUSDT</div><div id="assetSubtitle" class="asset-sub">Mercado spot · Binance</div></div></div>
+            <div class="asset-price-block"><div id="assetPrice" class="asset-price">--</div><div id="assetChange" class="asset-change neutral">--</div></div>
+          </div>
+          <div class="section-head"><h2 class="section-title">Preço e médias móveis</h2><div class="chart-key"><span class="key-item"><i class="key-line" aria-hidden="true"></i>Fechamento</span><span class="key-item"><i class="key-line short" aria-hidden="true"></i>SMA curta</span><span class="key-item"><i class="key-line long" aria-hidden="true"></i>SMA longa</span></div></div>
+          <div class="chart-frame"><canvas id="priceChart" role="img" aria-label="Gráfico de preço e médias móveis"></canvas></div>
+          <div class="chart-footer"><span id="chartRange">-- candles fechados</span><span id="chartWindow">Variação no intervalo exibido</span></div>
+
+          <div class="lower-grid">
+            <section aria-label="Distância entre as médias">
+              <div class="indicator-head"><h2 class="section-title">Distância entre médias</h2><span class="section-kicker">(SMA CURTA − LONGA) / LONGA</span></div>
+              <div class="indicator-frame"><canvas id="spreadChart" role="img" aria-label="Gráfico da distância percentual entre as médias"></canvas></div>
+            </section>
+            <section class="signal-panel" aria-label="Sinal técnico atual">
+              <div class="indicator-head"><h2 class="section-title">Leitura técnica</h2><span class="section-kicker">SMA CROSS</span></div>
+              <div class="signal-content"><div class="signal-label">TENDÊNCIA ATUAL</div><div id="signalStatus" class="signal-status">--</div><div id="signalDescription" class="signal-description">Aguardando dados suficientes para análise.</div><div id="signalTime" class="signal-time">ÚLTIMO CRUZAMENTO · --</div></div>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <footer class="bottomline"><span><strong>C2 FINANCE</strong> · MONITOR DE MERCADO</span><span>DADOS DE MERCADO PARA FINS INFORMATIVOS</span></footer>
+    </main>
+  </div>
+
+  <script>
+    const priceFormat = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 8 });
+    const percentFormat = new Intl.NumberFormat("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "always" });
+    const state = { timeframe: "1m", series: [], selected: "BTCUSDT", priceChart: null, spreadChart: null, timer: null, loading: false };
+    const chartColors = { green: "#63e695", lime: "#c2df77", teal: "#66bca8", grid: "rgba(138,154,142,.12)", text: "#718076", red: "#f17e79" };
+
+    const byId = (id) => document.getElementById(id);
+    const formatPrice = (value) => value == null ? "--" : priceFormat.format(value);
+    const formatPercent = (value) => value == null ? "--" : percentFormat.format(value) + "%";
+    const formatTime = (value) => new Date(value).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+    const formatDate = (value) => value ? new Date(value).toLocaleString("pt-BR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" }) : "NENHUM NO INTERVALO";
+
+    function updateConnection(connected) {
+      byId("statusLed").classList.toggle("connected", connected);
+      byId("sidebarLed").classList.toggle("connected", connected);
+      byId("connectionText").textContent = connected ? "AO VIVO" : "SEM CONEXÃO";
+      byId("sidebarConnection").textContent = connected ? "Binance conectada" : "Aguardando Binance";
+    }
+
+    function chartOptions({ showX = true, showY = true } = {}) {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 220 },
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "#121a15",
+            borderColor: "#2c3a30",
+            borderWidth: 1,
+            titleColor: "#aab9ad",
+            bodyColor: "#e7eee8",
+            titleFont: { family: "IBM Plex Mono", size: 10 },
+            bodyFont: { family: "IBM Plex Mono", size: 10 },
+            padding: 10,
+            callbacks: { label: (context) => " " + context.dataset.label + ": " + formatPrice(context.parsed.y) }
+          }
+        },
+        scales: {
+          x: { display: showX, grid: { display: false }, ticks: { color: chartColors.text, maxTicksLimit: 7, maxRotation: 0, font: { family: "IBM Plex Mono", size: 9 } }, border: { color: chartColors.grid } },
+          y: { display: showY, position: "right", grid: { color: chartColors.grid }, ticks: { color: chartColors.text, maxTicksLimit: 6, font: { family: "IBM Plex Mono", size: 9 }, callback: (value) => formatPrice(value) }, border: { display: false } }
+        }
+      };
+    }
+
+    function createCharts() {
+      if (!window.Chart) {
+        showError("Não foi possível carregar a biblioteca de gráficos. Verifique a conexão com a internet e recarregue a página.");
+        return;
+      }
+      state.priceChart = new Chart(byId("priceChart"), {
+        type: "line",
+        data: { labels: [], datasets: [
+          { label: "Fechamento", data: [], borderColor: chartColors.green, borderWidth: 2, pointRadius: 0, pointHoverRadius: 3, tension: .18 },
+          { label: "SMA curta", data: [], borderColor: chartColors.lime, borderWidth: 1.25, pointRadius: 0, pointHoverRadius: 2, tension: .12 },
+          { label: "SMA longa", data: [], borderColor: chartColors.teal, borderWidth: 1.25, pointRadius: 0, pointHoverRadius: 2, tension: .12 }
+        ] },
+        options: { ...chartOptions(), scales: { ...chartOptions().scales, y: { ...chartOptions().scales.y, ticks: { ...chartOptions().scales.y.ticks, callback: (value) => formatPrice(value) } } } }
+      });
+      state.spreadChart = new Chart(byId("spreadChart"), {
+        type: "bar",
+        data: { labels: [], datasets: [{ label: "Distância %", data: [], backgroundColor: [], borderWidth: 0, borderRadius: 1, barPercentage: 1, categoryPercentage: 1 }] },
+        options: {
+          ...chartOptions({ showX: false }),
+          interaction: { mode: "index", intersect: false },
+          plugins: { ...chartOptions().plugins, tooltip: { ...chartOptions().plugins.tooltip, callbacks: { label: (context) => " Distância: " + formatPercent(context.parsed.y) } } },
+          scales: { ...chartOptions({ showX: false }).scales, y: { ...chartOptions().scales.y, ticks: { ...chartOptions().scales.y.ticks, callback: (value) => Number(value).toFixed(2) + "%" } } }
+        }
+      });
+    }
+
+    function showError(message) {
+      const target = byId("errorMessage");
+      target.textContent = message;
+      target.classList.add("visible");
+    }
+
+    function clearError() { byId("errorMessage").classList.remove("visible"); }
+
+    function requestUrl() {
+      const params = new URLSearchParams({
+        symbols: byId("symbolsInput").value,
+        timeframe: state.timeframe,
+        short: byId("shortInput").value,
+        long: byId("longInput").value
+      });
+      return "/api/market?" + params.toString();
+    }
+
+    async function refreshData() {
+      if (state.loading) return;
+      state.loading = true;
+      byId("refreshButton").disabled = true;
+      try {
+        const response = await fetch(requestUrl(), { headers: { Accept: "application/json" }, cache: "no-store" });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.erro || "Falha ao consultar o mercado.");
+        state.series = payload.series;
+        if (!state.series.some((item) => item.simbolo === state.selected)) state.selected = state.series[0]?.simbolo;
+        byId("assetCount").textContent = String(state.series.length).padStart(2, "0");
+        byId("watchCount").textContent = String(state.series.length).padStart(2, "0") + " PARES";
+        byId("summaryTimeframe").textContent = payload.timeframe;
+        byId("summaryAverages").textContent = "SMA " + payload.periodoCurto + " / " + payload.periodoLongo;
+        byId("updatedAt").textContent = formatTime(payload.atualizadoEm);
+        updateConnection(true);
+        clearError();
+        renderWatchlist();
+        renderSelected();
+      } catch (error) {
+        updateConnection(false);
+        showError(error.message || "Não foi possível atualizar os dados de mercado.");
+      } finally {
+        state.loading = false;
+        byId("refreshButton").disabled = false;
+      }
+    }
+
+    function renderWatchlist() {
+      const container = byId("watchItems");
+      if (!state.series.length) {
+        container.innerHTML = '<div class="watch-empty">Nenhum ativo disponível.</div>';
+        return;
+      }
+      container.innerHTML = state.series.map((item) => {
+        const changeClass = item.variacaoPercentual > 0 ? "positive" : item.variacaoPercentual < 0 ? "negative" : "neutral";
+        return '<button class="watch-item ' + (item.simbolo === state.selected ? "active" : "") + '" type="button" data-symbol="' + item.simbolo + '" aria-pressed="' + (item.simbolo === state.selected) + '">' +
+          '<span><span class="watch-symbol">' + item.simbolo + '</span><br><span class="watch-market">SPOT · ' + item.timeframe + '</span></span>' +
+          '<span><span class="watch-price">' + formatPrice(item.precoAtual) + '</span><br><span class="watch-change ' + changeClass + '">' + formatPercent(item.variacaoPercentual) + '</span></span></button>';
+      }).join("");
+      container.querySelectorAll("[data-symbol]").forEach((button) => button.addEventListener("click", () => {
+        state.selected = button.dataset.symbol;
+        renderWatchlist();
+        renderSelected();
+      }));
+    }
+
+    function renderSelected() {
+      const item = state.series.find((series) => series.simbolo === state.selected);
+      if (!item || !state.priceChart || !state.spreadChart) return;
+      const changeClass = item.variacaoPercentual > 0 ? "positive" : item.variacaoPercentual < 0 ? "negative" : "neutral";
+      byId("assetToken").textContent = item.simbolo.replace(/USDT$|USDC$|BUSD$/, "").slice(0, 4);
+      byId("assetName").textContent = item.simbolo;
+      byId("assetSubtitle").textContent = "Mercado spot · Binance · " + item.timeframe;
+      byId("assetPrice").textContent = formatPrice(item.precoAtual);
+      byId("assetChange").textContent = formatPercent(item.variacaoPercentual);
+      byId("assetChange").className = "asset-change " + changeClass;
+      const labels = item.pontos.map((point) => new Date(point.horario).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }));
+      state.priceChart.data.labels = labels;
+      state.priceChart.data.datasets[0].data = item.pontos.map((point) => point.fechamento);
+      state.priceChart.data.datasets[1].data = item.pontos.map((point) => point.smaCurta);
+      state.priceChart.data.datasets[2].data = item.pontos.map((point) => point.smaLonga);
+      state.priceChart.update("none");
+      const spread = item.pontos.map((point) => point.smaCurta == null || point.smaLonga == null || point.smaLonga === 0
+        ? null : ((point.smaCurta - point.smaLonga) / point.smaLonga) * 100);
+      state.spreadChart.data.labels = labels;
+      state.spreadChart.data.datasets[0].data = spread;
+      state.spreadChart.data.datasets[0].backgroundColor = spread.map((value) => value == null ? "transparent" : value >= 0 ? "rgba(99,230,149,.72)" : "rgba(241,126,121,.72)");
+      state.spreadChart.update("none");
+      byId("chartRange").textContent = item.pontos.length + " CANDLES FECHADOS · " + item.timeframe;
+      byId("chartWindow").textContent = "VARIAÇÃO NO INTERVALO EXIBIDO";
+      const currentTrend = item.tendencia === "ALTA" ? "buy" : "sell";
+      const status = item.ultimoCruzamento || (item.tendencia === "ALTA" ? "SMA CURTA ACIMA" : "SMA CURTA ABAIXO");
+      byId("signalStatus").textContent = status;
+      byId("signalStatus").className = "signal-status " + (item.ultimoCruzamento === "VENDA" ? "sell" : item.ultimoCruzamento === "COMPRA" ? "buy" : currentTrend);
+      byId("signalDescription").textContent = item.ultimoCruzamento
+        ? (item.ultimoCruzamento === "COMPRA" ? "Último cruzamento detectado: sinal de compra." : "Último cruzamento detectado: sinal de venda.")
+        : "Sem cruzamento recente. Tendência calculada pela posição das médias.";
+      byId("signalTime").textContent = "ÚLTIMO CRUZAMENTO · " + formatDate(item.dataUltimoCruzamento);
+    }
+
+    function applyControls() {
+      const symbols = byId("symbolsInput").value.split(",").map((symbol) => symbol.trim()).filter(Boolean);
+      const shortPeriod = Number(byId("shortInput").value);
+      const longPeriod = Number(byId("longInput").value);
+      if (!symbols.length || symbols.length > 8 || symbols.some((symbol) => !/^[A-Za-z0-9]{2,20}$/.test(symbol))) {
+        showError("Informe de 1 a 8 símbolos válidos, separados por vírgula.");
+        return;
+      }
+      if (!Number.isInteger(shortPeriod) || !Number.isInteger(longPeriod) || shortPeriod < 1 || longPeriod <= shortPeriod || longPeriod >= 200) {
+        showError("Os períodos precisam respeitar: 0 < SMA curta < SMA longa < 200.");
+        return;
+      }
+      state.selected = symbols[0].toUpperCase();
+      refreshData();
+      setRefreshTimer();
+    }
+
+    function setRefreshTimer() {
+      clearInterval(state.timer);
+      state.timer = setInterval(refreshData, Number(byId("refreshSelect").value) * 1000);
+    }
+
+    document.querySelectorAll("[data-timeframe]").forEach((button) => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-timeframe]").forEach((item) => {
+        item.classList.toggle("selected", item === button);
+        item.setAttribute("aria-pressed", String(item === button));
+      });
+      state.timeframe = button.dataset.timeframe;
+      refreshData();
+    }));
+    byId("applyButton").addEventListener("click", applyControls);
+    byId("refreshButton").addEventListener("click", refreshData);
+    byId("refreshSelect").addEventListener("change", setRefreshTimer);
+    byId("symbolsInput").addEventListener("keydown", (event) => { if (event.key === "Enter") applyControls(); });
+    byId("clock").textContent = new Date().toLocaleTimeString("pt-BR");
+    setInterval(() => { byId("clock").textContent = new Date().toLocaleTimeString("pt-BR"); }, 1000);
+    createCharts();
+    refreshData();
+    setRefreshTimer();
+  </script>
+</body>
+</html>

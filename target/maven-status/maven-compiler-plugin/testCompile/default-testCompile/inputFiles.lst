@@ -1,0 +1,17 @@
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\alerta\ConsoleAlertaChannelTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\alerta\EmailAlertaChannelTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\alerta\MonitorPrecosTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\analise\AnalisadorTecnicoTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\api\BinanceClientTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\api\dto\BinanceTickerDTOTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\api\ResultadoAtivoTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\backtest\BacktestEngineTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\backtest\LeitorHistoricoTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\backtest\RelatorioBacktestTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\dashboard\DashboardServerTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\MainTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\modelo\AtivoFinanceiroTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\modelo\PrecoHistoricoTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\motor\BackoffExponencialTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\motor\MotorRequisicoesTest.java
+C:\Users\Carlos Henrique\Desktop\work-dev\GitHub\Projeto-Financeiro\src\test\java\com\scanner\financeiro\motor\ResultadoRequisicaoTest.java
